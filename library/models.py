@@ -1,28 +1,46 @@
+from django.utils import timezone
+from django.conf import settings
+
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import User, UserManager
 from django.db import models
 
-class Book(models.Model):
 
-    title = models.CharField(max_length=200)
-    author = models.CharField(max_length=200)
-    version = models.CharField(max_length=200)
-    code = models.CharField(max_length=200)
-    image = models.ImageField()
+class NominalBook(models.Model):
+    cod = models.AutoField(primary_key=True)
+    title = models.CharField(max_length=300)
+    author = models.CharField(max_length=300)
+    edition = models.IntegerField()
+    volume = models.IntegerField()
+    description = models.TextField()
+
+
+class Book(models.Model):
+    cod_NominalBook = models.ForeignKey(NominalBook, on_delete=models.CASCADE)
+    available = models.BooleanField(default=True)
+    donor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, blank=True, null=True)
 
     def __str__(self):
-        return self.title
-    pass
+        return self.cod_NominalBook.title
+
 
 class Location(models.Model):
-
-    book = models.ForeignKey(Book, on_delete=models.CASCADE)
-    #user = models.ForeignKey(Profile, on_delete=models.CASCADE)
-    date = models.DateTimeField(auto_now_add=True)
+    id_book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    id_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    date_i = models.DateTimeField(default=timezone.now)
+    date_f = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return self.book + " - " + self.user + " - " + self.date
-    pass
+        return self.id_book + " - " + self.id_user + " - " + self.date_i + " - " + self.date_f
+
+
+class Donation(models.Model):
+    id_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, blank=True, null=True)
+    book_title = models.CharField(max_length=300)
+    closed = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.book_title
 
 
 '''
