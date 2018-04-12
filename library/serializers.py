@@ -1,5 +1,5 @@
 from rest_framework import serializers, viewsets
-from .models import Donation, Location, NominalBook, Book, MyUser
+from .models import Donation, Location, NominalBook, Book, MyUser as User
 
 
 class NominalBookSerializer(serializers.ModelSerializer):
@@ -28,5 +28,5 @@ class DonationSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = MyUser
-        fields = ('id', 'email', 'registry', 'photo', 'tee', 'name')
+        model = User
+        fields = '__all__'
