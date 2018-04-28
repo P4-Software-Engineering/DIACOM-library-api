@@ -1,28 +1,48 @@
-from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
-from django.contrib.auth.models import User, UserManager
+from django.utils import timezone
+from django.conf import settings
+
+# from django.contrib.auth.models import User, UserManager
 from django.db import models
+from django.core.mail import send_mail
+from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
+from django.utils.translation import ugettext_lazy as _
+
+
+class NominalBook(models.Model):
+    cod = models.AutoField(primary_key=True)
+    title = models.CharField(max_length=300)
+    author = models.CharField(max_length=300)
+    edition = models.IntegerField()
+    volume = models.IntegerField()
+    description = models.TextField()
+
 
 class Book(models.Model):
-
-    title = models.CharField(max_length=200)
-    author = models.CharField(max_length=200)
-    version = models.CharField(max_length=200)
-    code = models.CharField(max_length=200)
-    image = models.ImageField()
+    cod_NominalBook = models.ForeignKey(NominalBook, on_delete=models.CASCADE)
+    available = models.BooleanField(default=True)
+    donor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, blank=True, null=True)
 
     def __str__(self):
-        return self.title
-    pass
+        return self.cod_NominalBook.title
+
 
 class Location(models.Model):
-
-    book = models.ForeignKey(Book, on_delete=models.CASCADE)
-    #user = models.ForeignKey(Profile, on_delete=models.CASCADE)
-    date = models.DateTimeField(auto_now_add=True)
+    id_book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    id_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    date_i = models.DateTimeField(default=timezone.now)
+    date_f = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return self.book + " - " + self.user + " - " + self.date
-    pass
+        return self.id_book + " - " + self.id_user + " - " + self.date_i + " - " + self.date_f
+
+
+class Donation(models.Model):
+    id_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, blank=True, null=True)
+    book_title = models.CharField(max_length=300)
+    closed = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.book_title
 
 
 '''
@@ -30,38 +50,35 @@ class Location(models.Model):
 '''
 
 class MyUserManager(BaseUserManager):
-    def create_user(self, email, registry, password, name):
+    use_in_migrations = True
+
+    def _create_user(self, email, password, first_name, **extra_fields):
         """
-        Creates and saves a User with the given email, date of
-        birth and password.
+                Creates and saves a User with the given email and password.
         """
         if not email:
             raise ValueError('Users must have an email address')
 
         user = self.model(
             email=self.normalize_email(email),
-            registry=registry,
-            name=name,
+            first_name=first_name,
+            **extra_fields
         )
-
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, registry, password, name):
-        """
-        Creates and saves a superuser with the given email, date of
-        birth and password.
-        """
-        user = self.create_user(
-            email,
-            password=password,
-            registry=registry,
-            name=name,
-        )
-        user.is_admin = True
-        user.save(using=self._db)
-        return user
+    def create_user(self, email, password, first_name, **extra_fields):
+        extra_fields.setdefault('is_superuser', False)
+        return self._create_user(email, password, first_name, **extra_fields)
+
+    def create_superuser(self, email, password, first_name, **extra_fields):
+        extra_fields.setdefault('is_superuser', True)
+
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError('Superuser must have is_superuser=True')
+
+        return self._create_user(email, password, first_name, **extra_fields)
 
 
 class MyUser(AbstractBaseUser):
@@ -70,20 +87,38 @@ class MyUser(AbstractBaseUser):
         max_length=255,
         unique=True,
     )
-    registry = models.CharField(max_length=10)
-    name = models.CharField(max_length=50)
-    tee = models.FloatField(default=0)
-    photo = models.ImageField()
+    profile_pic = models.ImageField(upload_to='profile_picture/', null=True, blank=True)
+    first_name = models.CharField(_('first name'), max_length=50)
+    last_name = models.CharField(_('last name'), max_length=300)
+    phone = models.IntegerField(blank=True, null=True)
     is_active = models.BooleanField(default=True)
-    is_admin = models.BooleanField(default=False)
+    is_DIACOM = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
 
     objects = MyUserManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['registry', 'name']
+    REQUIRED_FIELDS = ['first_name']
+
+    class Meta:
+        verbose_name = _('user')
+        verbose_name_plural = _('users')
 
     def __str__(self):
         return self.email
+
+    def get_full_name(self):
+        '''
+        Returns the first_name plus the last_name, with a space in between.
+        '''
+        full_name = '%s %s' % (self.first_name, self.last_name)
+        return full_name.strip()
+
+    def email_user(self, subject, message, from_email=None, **kwargs):
+        '''
+        Sends an email to this User.
+        '''
+        send_mail(subject, message, from_email, [self.email], **kwargs)
 
     def has_perm(self, perm, obj=None):
         "Does the user have a specific permission?"
@@ -97,6 +132,6 @@ class MyUser(AbstractBaseUser):
 
     @property
     def is_staff(self):
-        "Is the user a member of staff?"
+        # Is the user a member of staff?"
         # Simplest possible answer: All admins are staff
-        return self.is_admin
+        return self.is_superuser
