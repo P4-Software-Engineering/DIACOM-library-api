@@ -5,7 +5,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import NominalBook as NominalBookModel, Book as BookModel, Location as LocationModel, Donation as DonationModel
+from .models import NominalBook as NominalBookModel, Book as BookModel, Location as LocationModel, Donation as DonationModel, MyUser as MyUserModel
 from .serializers import BookSerializer, UserSerializer, NominalBookSerializer, LocationSerializer, DonationSerializer
 
 
@@ -28,11 +28,11 @@ class Donation(viewsets.ModelViewSet):
     queryset = DonationModel.objects.all()
     serializer_class = DonationSerializer
 
-#
+
 # class UserList(generics.ListCreateAPIView):
-#     queryset = MyUser.objects.all()
+#     queryset = MyUserModel.objects.all()
 #     serializer_class = UserSerializer
-#
+
 #
 # class CurrentUserView(APIView):
 #     def get(self, request):
