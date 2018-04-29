@@ -49,6 +49,7 @@ class Donation(models.Model):
     Add attributes user
 '''
 
+
 class MyUserManager(BaseUserManager):
     use_in_migrations = True
 
@@ -87,7 +88,8 @@ class MyUser(AbstractBaseUser):
         max_length=255,
         unique=True,
     )
-    profile_pic = models.ImageField(upload_to='profile_picture/', null=True, blank=True)
+    # profile_pic = models.ImageField(upload_to='profile_picture/', null=True, blank=True)
+    profile_pic = models.TextField(_('profile picture'), null=True, blank=True)
     first_name = models.CharField(_('first name'), max_length=50)
     last_name = models.CharField(_('last name'), max_length=300)
     phone = models.IntegerField(blank=True, null=True)
