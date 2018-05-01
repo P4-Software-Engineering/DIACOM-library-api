@@ -15,15 +15,16 @@ class NominalBook(models.Model):
     edition = models.IntegerField()
     volume = models.IntegerField()
     description = models.TextField()
+    cover = models.TextField()
 
 
 class Book(models.Model):
-    cod_NominalBook = models.ForeignKey(NominalBook, on_delete=models.CASCADE)
+    cod_nominal_book = models.ForeignKey(NominalBook, on_delete=models.CASCADE)
     available = models.BooleanField(default=True)
     donor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, blank=True, null=True)
 
     def __str__(self):
-        return self.cod_NominalBook.title
+        return self.cod_nominal_book.title
 
 
 class Location(models.Model):
