@@ -13,7 +13,7 @@ class NominalBook(models.Model):
     title = models.CharField(max_length=300)
     author = models.CharField(max_length=300)
     edition = models.IntegerField()
-    volume = models.IntegerField()
+    volume = models.IntegerField(null=True, blank=True)
     description = models.TextField()
     cover = models.TextField()
 
