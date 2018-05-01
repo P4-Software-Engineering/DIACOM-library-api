@@ -92,7 +92,7 @@ class MyUser(AbstractBaseUser):
     # profile_pic = models.ImageField(upload_to='profile_picture/', null=True, blank=True)
     profile_pic = models.TextField(_('profile picture'), null=True, blank=True)
     first_name = models.CharField(_('first name'), max_length=50)
-    last_name = models.CharField(_('last name'), max_length=300)
+    last_name = models.CharField(_('last name'), max_length=300, null=True, blank=True)
     phone = models.IntegerField(blank=True, null=True)
     is_active = models.BooleanField(default=True)
     is_DIACOM = models.BooleanField(default=False)

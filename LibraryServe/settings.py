@@ -99,6 +99,10 @@ REST_AUTH_SERIALIZERS = {
     'USER_DETAILS_SERIALIZER': 'library.serializers.CustomUserDetailsSerializer'
 }
 
+REST_AUTH_REGISTER_SERIALIZERS = {
+    'REGISTER_SERIALIZER': 'library.serializers.CustomRegisterSerializer',
+}
+
 ROOT_URLCONF = 'LibraryServe.urls'
 
 TEMPLATES = [
