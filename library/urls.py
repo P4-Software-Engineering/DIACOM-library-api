@@ -8,10 +8,10 @@ from rest_framework_jwt.views import verify_jwt_token
 
 
 router = DefaultRouter()
-router.register(r'api/NominalBook', views.NominalBook)
-router.register(r'api/Book', views.Book)
-router.register(r'api/Location', views.Location)
-router.register(r'api/Donation', views.Donation)
+router.register(r'api/nominal_book', views.NominalBook)
+router.register(r'api/book', views.Book)
+router.register(r'api/location', views.Location)
+router.register(r'api/donation', views.Donation)
 # router.register(r'api/UserList', views.UserList)
 
 
