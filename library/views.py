@@ -29,6 +29,7 @@ class Donation(viewsets.ModelViewSet):
     serializer_class = DonationSerializer
 
 
+
 # class UserList(generics.ListCreateAPIView):
 #     queryset = MyUserModel.objects.all()
 #     serializer_class = UserSerializer
