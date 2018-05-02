@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, mixins, filters, status
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, AllowAny
 
 from library.permissions import IsDIACOM, IsDIACOMOrReadOnly, IsOwnerOrDIACOM
 from .models import NominalBook as NominalBookModel, Book as BookModel, Location as LocationModel, \
@@ -17,6 +17,15 @@ class NominalBook(viewsets.ModelViewSet):
 
     filter_backends = (filters.SearchFilter,)
     search_fields = ('title', 'author')
+
+
+class NominalBookTop10(viewsets.ViewSet):
+    permission_classes = [AllowAny]
+
+    def list(self, request):
+        queryset = NominalBookModel.objects.all().order_by('-popularity')[:10]
+        serializer = NominalBookSerializer(queryset, many=True)
+        return Response(serializer.data)
 
 
 class Book(viewsets.GenericViewSet,
@@ -36,6 +45,8 @@ class Book(viewsets.GenericViewSet,
 
 
 class BookQuantity(viewsets.ViewSet):
+    permission_classes = [IsAuthenticated, IsDIACOM]
+
     def retrieve(self, request, cod_nominal_book):
         queryset = BookModel.objects.filter(cod_nominal_book=cod_nominal_book)
         quantity = len(queryset)
@@ -66,11 +77,9 @@ class Location(viewsets.GenericViewSet,
             if book.available is False:
                 return Response('Livro já alocado! Tente com outro livro!', status=status.HTTP_400_BAD_REQUEST)
             book.available = False
-            nominal_book = NominalBookModel.objects.all()
-            nominal_book = get_object_or_404(nominal_book, cod=book.cod_nominal_book)
-            nominal_book.popularity = nominal_book.popularity + 1
+            book.cod_nominal_book.popularity += 1
+            book.cod_nominal_book.save()
             book.save()
-            nominal_book.save()
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

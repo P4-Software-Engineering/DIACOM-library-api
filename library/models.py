@@ -18,6 +18,9 @@ class NominalBook(models.Model):
     cover = models.TextField()
     popularity = models.IntegerField(default=0)
 
+    def __str__(self):
+        return self.title
+
 
 class Book(models.Model):
     cod = models.CharField(primary_key=True, max_length=10)
@@ -36,7 +39,7 @@ class Location(models.Model):
     date_f = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return self.cod_book + " - " + self.id_user + " - " + self.date_i + " - " + self.date_f
+        return self.cod_book.cod_nominal_book.title + " - " + self.id_user.first_name
 
 
 class Donation(models.Model):
