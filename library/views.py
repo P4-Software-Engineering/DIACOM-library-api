@@ -1,12 +1,11 @@
-from rest_framework import viewsets, mixins
-from rest_framework.authentication import SessionAuthentication
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
-from rest_framework.permissions import AllowAny
+from django.shortcuts import get_object_or_404
+from rest_framework import viewsets, mixins, filters, status
 from rest_framework.response import Response
-from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 
 from library.permissions import IsDIACOM, IsDIACOMOrReadOnly, IsOwnerOrDIACOM
-from .models import NominalBook as NominalBookModel, Book as BookModel, Location as LocationModel, Donation as DonationModel, MyUser as MyUserModel
+from .models import NominalBook as NominalBookModel, Book as BookModel, Location as LocationModel, \
+    Donation as DonationModel, MyUser as MyUserModel
 from .serializers import BookSerializer, UserSerializer, NominalBookSerializer, LocationSerializer, DonationSerializer
 
 
@@ -16,16 +15,35 @@ class NominalBook(viewsets.ModelViewSet):
     queryset = NominalBookModel.objects.all()
     serializer_class = NominalBookSerializer
 
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('title', 'author')
 
-class Book(viewsets.ModelViewSet):
+
+class Book(viewsets.GenericViewSet,
+           mixins.CreateModelMixin,
+           mixins.DestroyModelMixin,
+           mixins.UpdateModelMixin,
+           mixins.RetrieveModelMixin):
     permission_classes = [IsAuthenticated, IsDIACOM]
 
     queryset = BookModel.objects.all()
     serializer_class = BookSerializer
 
+    def list(self, request, cod_nominal_book):
+        queryset = BookModel.objects.filter(cod_nominal_book=cod_nominal_book).order_by('available')
+        serializer = BookSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+
+# class BookQuantity(viewsets.ViewSet):
+#     def retrieve(self, request, cod_nominal_book):
+#         queryset = BookModel.objects.filter(cod_nominal_book=cod_nominal_book)
+#         quantity = len(queryset)
+#         serializer = BookQuantitySerializer(quantity, many=False)
+#         return Response(serializer.data)
+
 
 class Location(viewsets.GenericViewSet,
-               mixins.CreateModelMixin,
                mixins.ListModelMixin,
                mixins.UpdateModelMixin,
                mixins.RetrieveModelMixin):
@@ -39,6 +57,19 @@ class Location(viewsets.GenericViewSet,
 
     queryset = LocationModel.objects.all()
     serializer_class = LocationSerializer
+
+    def create(self, request):
+        serializer = LocationSerializer(data=request.data)
+        if serializer.is_valid():
+            book = BookModel.objects.all()
+            book = get_object_or_404(book, id=request.data.__getitem__('id_book'))
+            if book.available is False:
+                return Response('Livro já alocado! Tente com outro livro!', status=status.HTTP_400_BAD_REQUEST)
+            book.available = False
+            book.save()
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class Donation(viewsets.ModelViewSet):
@@ -54,13 +85,13 @@ class Donation(viewsets.ModelViewSet):
     serializer_class = DonationSerializer
 
 
-# class UserList(generics.ListCreateAPIView):
-#     queryset = MyUserModel.objects.all()
-#     serializer_class = UserSerializer
+class User(viewsets.GenericViewSet,
+           mixins.ListModelMixin,
+           mixins.RetrieveModelMixin):
+    permission_classes = [IsAuthenticated, IsDIACOM]
 
-#
-# class CurrentUserView(APIView):
-#     def get(self, request):
-#         serializer = UserSerializer(request.user)
-#         print(serializer.data)
-#         return Response(serializer.data)
+    queryset = MyUserModel.objects.all()
+    serializer_class = UserSerializer
+
+    filter_backends = (filters.SearchFilter, )
+    search_fields = ('first_name', 'last_name', 'email')

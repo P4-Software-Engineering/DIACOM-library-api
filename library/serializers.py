@@ -9,11 +9,12 @@ except ImportError:
     raise ImportError("allauth needs to be added to INSTALLED_APPS.")
 
 from rest_framework import serializers
-from .models import Donation, Location, NominalBook, Book, MyUser as User
+from .models import Donation, Location, NominalBook, Book
 
 
 # Get the UserModel
 UserModel = get_user_model()
+
 
 class NominalBookSerializer(serializers.ModelSerializer):
     class Meta:
@@ -25,6 +26,14 @@ class BookSerializer(serializers.ModelSerializer):
     class Meta:
         model = Book
         fields = '__all__'
+
+
+# class BookQuantitySerializer(serializers.Serializer):
+#     quantity = serializers.IntegerField(min_value=0)
+#
+#     def update(self, instance, validated_data):
+#         instance.quantity = validated_data.get('quantity', instance.quantity)
+#         return instance
 
 
 class LocationSerializer(serializers.ModelSerializer):
@@ -41,7 +50,7 @@ class DonationSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
+        model = UserModel
         fields = '__all__'
 
 
