@@ -62,11 +62,15 @@ class Location(viewsets.GenericViewSet,
         serializer = LocationSerializer(data=request.data)
         if serializer.is_valid():
             book = BookModel.objects.all()
-            book = get_object_or_404(book, id=request.data.__getitem__('id_book'))
+            book = get_object_or_404(book, cod=request.data.__getitem__('cod_book'))
             if book.available is False:
                 return Response('Livro já alocado! Tente com outro livro!', status=status.HTTP_400_BAD_REQUEST)
             book.available = False
+            nominal_book = NominalBookModel.objects.all()
+            nominal_book = get_object_or_404(nominal_book, cod=book.cod_nominal_book)
+            nominal_book.popularity = nominal_book.popularity + 1
             book.save()
+            nominal_book.save()
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

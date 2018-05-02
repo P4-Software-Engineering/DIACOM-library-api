@@ -19,7 +19,7 @@ UserModel = get_user_model()
 class NominalBookSerializer(serializers.ModelSerializer):
     class Meta:
         model = NominalBook
-        fields = '__all__'
+        fields = ('cod', 'title', 'author', 'edition', 'volume', 'description', 'cover')
 
 
 class BookSerializer(serializers.ModelSerializer):

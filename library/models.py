@@ -16,9 +16,11 @@ class NominalBook(models.Model):
     volume = models.IntegerField(null=True, blank=True)
     description = models.TextField()
     cover = models.TextField()
+    popularity = models.IntegerField(default=0)
 
 
 class Book(models.Model):
+    cod = models.CharField(primary_key=True, max_length=10)
     cod_nominal_book = models.ForeignKey(NominalBook, on_delete=models.CASCADE)
     available = models.BooleanField(default=True)
     donor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, blank=True, null=True)
@@ -28,13 +30,13 @@ class Book(models.Model):
 
 
 class Location(models.Model):
-    id_book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    cod_book = models.ForeignKey(Book, on_delete=models.CASCADE)
     id_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     date_i = models.DateTimeField(default=timezone.now)
     date_f = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return self.id_book + " - " + self.id_user + " - " + self.date_i + " - " + self.date_f
+        return self.cod_book + " - " + self.id_user + " - " + self.date_i + " - " + self.date_f
 
 
 class Donation(models.Model):
