@@ -12,14 +12,17 @@ router.register(r'api/nominal_book', views.NominalBook)
 router.register(r'api/book', views.Book)
 router.register(r'api/location', views.Location)
 router.register(r'api/donation', views.Donation)
-# router.register(r'api/UserList', views.UserList)
+router.register(r'api/user', views.User)
 
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^', include(router.urls)),
-    # url(r'^user/$', views.CurrentUserView.as_view()),
-    # url(r'^users/$', views.UserList.as_view()),
+
+    url(r'^api/book/list/(?P<cod_nominal_book>[0-9]+)/$', views.Book.as_view({'get': 'list'})),
+    url(r'^api/book_quantity/(?P<cod_nominal_book>[0-9]+)/$', views.BookQuantity.as_view({'get': 'retrieve'})),
+    url(r'^api/nominal_book_top10/$', views.NominalBookTop10.as_view({'get': 'list'})),
+
     url(r'^api/auth-jwt/', obtain_jwt_token),
     url(r'^api/auth-jwt-refresh/', refresh_jwt_token),
     url(r'^api/auth-jwt-verify/', verify_jwt_token),

@@ -74,9 +74,6 @@ JWT_AUTH = {
 }
 
 REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
-    ),
     'DEFAULT_AUTHENTICATION_CLASSES': (  # Make JWT Auth the default authentication mechanism for Django
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
     ),
