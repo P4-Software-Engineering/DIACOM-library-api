@@ -35,12 +35,12 @@ class Book(viewsets.GenericViewSet,
         return Response(serializer.data)
 
 
-# class BookQuantity(viewsets.ViewSet):
-#     def retrieve(self, request, cod_nominal_book):
-#         queryset = BookModel.objects.filter(cod_nominal_book=cod_nominal_book)
-#         quantity = len(queryset)
-#         serializer = BookQuantitySerializer(quantity, many=False)
-#         return Response(serializer.data)
+class BookQuantity(viewsets.ViewSet):
+    def retrieve(self, request, cod_nominal_book):
+        queryset = BookModel.objects.filter(cod_nominal_book=cod_nominal_book)
+        quantity = len(queryset)
+
+        return Response(quantity)
 
 
 class Location(viewsets.GenericViewSet,

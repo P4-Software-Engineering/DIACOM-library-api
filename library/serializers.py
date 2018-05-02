@@ -28,14 +28,6 @@ class BookSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-# class BookQuantitySerializer(serializers.Serializer):
-#     quantity = serializers.IntegerField(min_value=0)
-#
-#     def update(self, instance, validated_data):
-#         instance.quantity = validated_data.get('quantity', instance.quantity)
-#         return instance
-
-
 class LocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Location
