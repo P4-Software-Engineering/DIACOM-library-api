@@ -1,4 +1,4 @@
-from django.utils import timezone
+import datetime
 from django.conf import settings
 
 # from django.contrib.auth.models import User, UserManager
@@ -33,10 +33,15 @@ class Book(models.Model):
 
 
 class Location(models.Model):
+    def get_fiftieth_day():
+        date = datetime.date.today()
+        date = date + datetime.timedelta(days=15)
+        return date
+
     cod_book = models.ForeignKey(Book, on_delete=models.CASCADE)
     id_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    date_i = models.DateTimeField(default=timezone.now)
-    date_f = models.DateTimeField(default=timezone.now)
+    date_i = models.DateField(default=datetime.date.today())
+    date_f = models.DateField(default=get_fiftieth_day())
 
     def __str__(self):
         return self.cod_book.cod_nominal_book.title + " - " + self.id_user.first_name

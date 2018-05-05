@@ -79,8 +79,8 @@ class Location(viewsets.GenericViewSet,
             book.available = False
             book.cod_nominal_book.popularity += 1
             book.cod_nominal_book.save()
-            book.save()
             serializer.save()
+            book.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
