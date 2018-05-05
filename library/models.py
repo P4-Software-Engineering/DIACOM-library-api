@@ -42,6 +42,7 @@ class Location(models.Model):
     id_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     date_i = models.DateField(default=datetime.date.today())
     date_f = models.DateField(default=get_fiftieth_day())
+    closed = models.BooleanField(default=False)
 
     def __str__(self):
         return self.cod_book.cod_nominal_book.title + " - " + self.id_user.first_name
