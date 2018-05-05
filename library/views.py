@@ -7,6 +7,7 @@ from library.permissions import IsDIACOM, IsDIACOMOrReadOnly, IsOwnerOrDIACOM
 from .models import NominalBook as NominalBookModel, Book as BookModel, Location as LocationModel, \
     Donation as DonationModel, MyUser as MyUserModel
 from .serializers import BookSerializer, UserSerializer, NominalBookSerializer, LocationSerializer, DonationSerializer
+import datetime
 
 
 class NominalBook(viewsets.ModelViewSet):
@@ -79,10 +80,20 @@ class Location(viewsets.GenericViewSet,
             book.available = False
             book.cod_nominal_book.popularity += 1
             book.cod_nominal_book.save()
-            book.save()
             serializer.save()
+            book.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class LocationExpired(viewsets.ViewSet):
+    permission_classes = [IsAuthenticated, IsDIACOM]
+
+    def list(self, request):
+        queryset = LocationModel.objects.filter(closed=False, date_f__lt=datetime.date.today()).order_by('date_f')
+        serializer = LocationSerializer(queryset, many=True)
+
+        return Response(serializer.data)
 
 
 class Donation(viewsets.ModelViewSet):
