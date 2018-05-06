@@ -86,14 +86,15 @@ class Location(viewsets.GenericViewSet,
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class LocationExpired(viewsets.ViewSet):
+class HasNotification(viewsets.ViewSet):
     permission_classes = [IsAuthenticated, IsDIACOM]
 
-    def list(self, request):
-        queryset = LocationModel.objects.filter(closed=False, date_f__lt=datetime.date.today()).order_by('date_f')
-        serializer = LocationSerializer(queryset, many=True)
-
-        return Response(serializer.data)
+    def retrieve(self, request):
+        locations = LocationModel.objects.filter(closed=False, date_f__lt=datetime.date.today()).order_by('date_f')
+        donations = DonationModel.objects.filter(closed=False)
+        if len(locations) > 0 or len(donations) > 0:
+            return Response(True)
+        return Response(False)
 
 
 class Donation(viewsets.ModelViewSet):

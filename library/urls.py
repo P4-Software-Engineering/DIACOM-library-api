@@ -22,7 +22,7 @@ urlpatterns = [
     url(r'^api/book/list/(?P<cod_nominal_book>[0-9]+)/$', views.Book.as_view({'get': 'list'})),
     url(r'^api/book_quantity/(?P<cod_nominal_book>[0-9]+)/$', views.BookQuantity.as_view({'get': 'retrieve'})),
     url(r'^api/nominal_book_top10/$', views.NominalBookTop10.as_view({'get': 'list'})),
-    url(r'^api/location_expired/$', views.LocationExpired.as_view({'get': 'list'})),
+    url(r'^api/has_notification/$', views.HasNotification.as_view({'get': 'retrieve'})),
 
     url(r'^api/auth-jwt/', obtain_jwt_token),
     url(r'^api/auth-jwt-refresh/', refresh_jwt_token),
