@@ -45,11 +45,10 @@ class Book(viewsets.GenericViewSet,
         return Response(serializer.data)
 
 
-class BookQuantity(viewsets.ViewSet):
-    permission_classes = [IsAuthenticated, IsDIACOM]
+class AvailableBookQuantity(viewsets.ViewSet):
 
     def retrieve(self, request, cod_nominal_book):
-        queryset = BookModel.objects.filter(cod_nominal_book=cod_nominal_book)
+        queryset = BookModel.objects.filter(cod_nominal_book=cod_nominal_book, available=True)
         quantity = len(queryset)
 
         return Response(quantity)
