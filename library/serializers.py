@@ -43,7 +43,7 @@ class DonationSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserModel
-        fields = '__all__'
+        fields = ('pk', 'email', 'first_name', 'last_name', 'phone', 'profile_pic')
 
 
 class CustomUserDetailsSerializer(serializers.ModelSerializer):
@@ -52,7 +52,7 @@ class CustomUserDetailsSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = UserModel
-        fields = ('pk', 'email', 'first_name', 'last_name', 'phone', 'profile_pic')
+        fields = ('pk', 'email', 'first_name', 'last_name', 'phone', 'profile_pic', 'is_DIACOM')
         read_only_fields = ('email', )
 
 

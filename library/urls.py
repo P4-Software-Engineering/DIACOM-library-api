@@ -20,7 +20,7 @@ urlpatterns = [
     url(r'^', include(router.urls)),
 
     url(r'^api/book/list/(?P<cod_nominal_book>[0-9]+)/$', views.Book.as_view({'get': 'list'})),
-    url(r'^api/book_quantity/(?P<cod_nominal_book>[0-9]+)/$', views.BookQuantity.as_view({'get': 'retrieve'})),
+    url(r'^api/available_book_quantity/(?P<cod_nominal_book>[0-9]+)/$', views.AvailableBookQuantity.as_view({'get': 'retrieve'})),
     url(r'^api/nominal_book_top10/$', views.NominalBookTop10.as_view({'get': 'list'})),
     url(r'^api/has_notification/$', views.HasNotification.as_view({'get': 'retrieve'})),
 
