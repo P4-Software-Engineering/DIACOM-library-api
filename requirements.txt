@@ -19,7 +19,7 @@ Flask==0.12.2
 httpie==0.9.9
 idna==2.6
 itsdangerous==0.24
-Jinja2==2.10
+Jinja2==2.11.3
 legacy==0.1.6
 Library==0.0.0
 Markdown==2.6.11
